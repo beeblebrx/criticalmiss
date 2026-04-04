@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cmake -B /home/kimmo/dev/criticalmiss/build /home/kimmo/dev/criticalmiss)",
+      "Bash(cmake --build /home/kimmo/dev/criticalmiss/build)"
+    ]
+  }
+}
