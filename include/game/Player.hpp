@@ -1,7 +1,9 @@
 #pragma once
 
 #include "GameObject.hpp"
-#include <SFML/Window/Keyboard.hpp>
+#include "Types.hpp"
+
+namespace game {
 
 class Player : public GameObject {
 public:
@@ -10,8 +12,10 @@ public:
     void onTick(Grid& grid, int currentTick) override;
     void onCollision(GameObject& other) override;
 
-    void bufferInput(sf::Keyboard::Key key);
+    void bufferInput(Direction dir);
 
 private:
-    sf::Keyboard::Key bufferedDirection_ = sf::Keyboard::Unknown;
+    Direction bufferedDirection_ = Direction::None;
 };
+
+} // namespace game

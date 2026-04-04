@@ -1,22 +1,24 @@
 #include "game/Player.hpp"
 #include <cstdio>
 
+namespace game {
+
 Player::Player(int id, int gridX, int gridY)
-    : GameObject(id, gridX, gridY, sf::Color::Green, 1) {}
+    : GameObject(id, gridX, gridY, Color{0, 255, 0}, 1) {}
 
 void Player::onTick(Grid& grid, int currentTick) {
-    if (bufferedDirection_ == sf::Keyboard::Unknown || !canMove(currentTick))
+    if (bufferedDirection_ == Direction::None || !canMove(currentTick))
         return;
 
     int dx = 0, dy = 0;
     switch (bufferedDirection_) {
-        case sf::Keyboard::W: case sf::Keyboard::Up:    dy = -1; break;
-        case sf::Keyboard::S: case sf::Keyboard::Down:  dy =  1; break;
-        case sf::Keyboard::A: case sf::Keyboard::Left:  dx = -1; break;
-        case sf::Keyboard::D: case sf::Keyboard::Right: dx =  1; break;
+        case Direction::Up:    dy = -1; break;
+        case Direction::Down:  dy =  1; break;
+        case Direction::Left:  dx = -1; break;
+        case Direction::Right: dx =  1; break;
         default: break;
     }
-    bufferedDirection_ = sf::Keyboard::Unknown;
+    bufferedDirection_ = Direction::None;
 
     int nx = gridX_ + dx, ny = gridY_ + dy;
     if (!grid.isInBounds(nx, ny))
@@ -33,6 +35,8 @@ void Player::onCollision(GameObject& /*other*/) {
     std::printf("Player slowed! moveInterval = %d\n", moveInterval_);
 }
 
-void Player::bufferInput(sf::Keyboard::Key key) {
-    bufferedDirection_ = key;
+void Player::bufferInput(Direction dir) {
+    bufferedDirection_ = dir;
 }
+
+} // namespace game

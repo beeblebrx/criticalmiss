@@ -2,8 +2,10 @@
 #include <cstdlib>
 #include <cstdio>
 
+namespace game {
+
 Enemy::Enemy(int id, int gridX, int gridY, int moveInterval)
-    : GameObject(id, gridX, gridY, sf::Color::Red, moveInterval) {}
+    : GameObject(id, gridX, gridY, Color{255, 0, 0}, moveInterval) {}
 
 void Enemy::onTick(Grid& grid, int currentTick) {
     if (!canMove(currentTick))
@@ -12,7 +14,6 @@ void Enemy::onTick(Grid& grid, int currentTick) {
     int dx = targetX_ - gridX_;
     int dy = targetY_ - gridY_;
 
-    // Pick primary axis (largest distance), fallback to other
     int stepX = (dx > 0) ? 1 : (dx < 0) ? -1 : 0;
     int stepY = (dy > 0) ? 1 : (dy < 0) ? -1 : 0;
 
@@ -45,3 +46,5 @@ void Enemy::setTarget(int targetX, int targetY) {
     targetX_ = targetX;
     targetY_ = targetY;
 }
+
+} // namespace game
