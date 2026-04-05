@@ -2,6 +2,7 @@
 #include "game/GameLoop.hpp"
 #include "render/Renderer.hpp"
 #include "events/EventHandler.hpp"
+#include "events/SFMLEventSource.hpp"
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/VideoMode.hpp>
 #include <SFML/System/Clock.hpp>
@@ -19,7 +20,8 @@ int main() {
 
     game::Game game;
     render::Renderer renderer(window, cellSize);
-    events::EventHandler eventHandler(window);
+    events::SFMLEventSource eventSource(window);
+    events::EventHandler eventHandler(eventSource);
     sf::Clock clock;
 
     game::GameLoop loop(game::Game::TICK_RATE);

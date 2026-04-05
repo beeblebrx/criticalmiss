@@ -4,13 +4,13 @@
 
 namespace events {
 
-EventHandler::EventHandler(sf::RenderWindow& window)
-    : window_(window) {}
+EventHandler::EventHandler(IEventSource& source)
+    : source_(source) {}
 
 game::GameInput EventHandler::processEvents() {
     game::GameInput input;
 
-    while (const std::optional<sf::Event> event = window_.pollEvent()) {
+    while (const std::optional<sf::Event> event = source_.pollEvent()) {
         if (event->is<sf::Event::Closed>()) {
             input.closeRequested = true;
             continue;

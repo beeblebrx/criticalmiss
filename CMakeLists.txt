@@ -40,6 +40,7 @@ target_link_libraries(render PUBLIC game SFML::Graphics)
 
 add_library(events STATIC
     src/events/EventHandler.cpp
+    src/events/SFMLEventSource.cpp
 )
 target_link_libraries(events PUBLIC game SFML::Graphics)
 

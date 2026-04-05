@@ -1,17 +1,17 @@
 #pragma once
 
+#include "events/IEventSource.hpp"
 #include "game/Types.hpp"
-#include <SFML/Graphics/RenderWindow.hpp>
 
 namespace events {
 
 class EventHandler {
 public:
-    EventHandler(sf::RenderWindow& window);
+    explicit EventHandler(IEventSource& source);
     game::GameInput processEvents();
 
 private:
-    sf::RenderWindow& window_;
+    IEventSource& source_;
 };
 
 } // namespace events
