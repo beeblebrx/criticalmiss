@@ -14,3 +14,9 @@ Follow the Clean Architecture principles: focus on creating software that is fle
 **`game/`** — the core domain layer. Must remain dependency-free: no includes from other directories, or any external library (including SFML). All other layers may depend on `game/`, never the reverse.
 
 **`main.cpp`** — wires everything together. Keep it as short as possible; any non-trivial logic belongs in a namespaced module.
+
+## Tests
+
+The project utilizes Google Test for testing. Tests are in **`tests/`**. After implementing a change update test cases that test the changed class or create new test suites for new classes. Then run tests:  ctest --test-dir build --output-on-failure
+
+If a test fails stop and tell how you plan to fix it and ask if you can continue.

@@ -12,6 +12,16 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
+FetchContent_Declare(
+    googletest
+    GIT_REPOSITORY https://github.com/google/googletest.git
+    GIT_TAG        v1.17.0
+    GIT_SHALLOW    ON
+)
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
 add_library(game STATIC
     src/game/Game.cpp
     src/game/Grid.cpp
@@ -35,3 +45,6 @@ target_link_libraries(events PUBLIC game SFML::Graphics)
 
 add_executable(criticalmiss src/main.cpp)
 target_link_libraries(criticalmiss PRIVATE render events)
+
+enable_testing()
+add_subdirectory(tests)
