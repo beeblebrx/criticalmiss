@@ -2,6 +2,7 @@ add_executable(game_tests
     GridTest.cpp
     GameTest.cpp
     EventHandlerTest.cpp
+    GameLoopTest.cpp
 )
 
 target_link_libraries(game_tests
