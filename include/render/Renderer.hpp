@@ -1,6 +1,7 @@
 #pragma once
 
 #include "game/GameObject.hpp"
+#include "game/Party.hpp"
 #include "game/Grid.hpp"
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
@@ -19,6 +20,7 @@ public:
 private:
     void drawGrid(const game::Grid& grid);
     void drawObject(const game::GameObject& obj, const game::Grid& grid, float alpha);
+    void drawParty(const game::Party& party, const game::Grid& grid, float alpha);
     sf::Vector2f cellToPixel(int x, int y) const;
 
     sf::RenderWindow& window_;

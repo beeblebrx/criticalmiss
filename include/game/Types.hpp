@@ -12,6 +12,7 @@ enum class Direction { None, Up, Down, Left, Right };
 
 struct GameInput {
     Direction playerDirection = Direction::None;
+    bool strafe = false;
     bool closeRequested = false;
 };
 

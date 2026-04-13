@@ -128,10 +128,55 @@ TEST(EventHandlerTest, LastDirectionKeyWins) {
 
 TEST(EventHandlerTest, UnrelatedKeyLeavesDirectionNone) {
     FakeEventSource source;
-    source.push(sf::Event::KeyPressed{.code = sf::Keyboard::Key::Space});
+    source.push(sf::Event::KeyPressed{.code = sf::Keyboard::Key::Tab});
     events::EventHandler handler(source);
 
     EXPECT_EQ(handler.processEvents().playerDirection, game::Direction::None);
+}
+
+TEST(EventHandlerTest, SpaceKeySetsStrafe) {
+    FakeEventSource source;
+    source.push(sf::Event::KeyPressed{.code = sf::Keyboard::Key::Space});
+    events::EventHandler handler(source);
+
+    auto input = handler.processEvents();
+
+    EXPECT_TRUE(input.strafe);
+    EXPECT_EQ(input.playerDirection, game::Direction::None);
+}
+
+TEST(EventHandlerTest, SpaceAndDirectionSetsBoth) {
+    FakeEventSource source;
+    source.push(sf::Event::KeyPressed{.code = sf::Keyboard::Key::Space});
+    source.push(sf::Event::KeyPressed{.code = sf::Keyboard::Key::D});
+    events::EventHandler handler(source);
+
+    auto input = handler.processEvents();
+
+    EXPECT_TRUE(input.strafe);
+    EXPECT_EQ(input.playerDirection, game::Direction::Right);
+}
+
+TEST(EventHandlerTest, StrafeRemainsSetWhileSpaceIsHeld) {
+    FakeEventSource source;
+    source.push(sf::Event::KeyPressed{.code = sf::Keyboard::Key::Space});
+    events::EventHandler handler(source);
+    handler.processEvents(); // frame 1: Space pressed, strafeHeld_ = true
+
+    // frame 2: no events, but Space not released — strafe should still be set
+    auto input = handler.processEvents();
+    EXPECT_TRUE(input.strafe);
+}
+
+TEST(EventHandlerTest, StrafeIsClearedOnSpaceRelease) {
+    FakeEventSource source;
+    source.push(sf::Event::KeyPressed{.code = sf::Keyboard::Key::Space});
+    source.push(sf::Event::KeyReleased{.code = sf::Keyboard::Key::Space});
+    events::EventHandler handler(source);
+
+    auto input = handler.processEvents();
+
+    EXPECT_FALSE(input.strafe);
 }
 
 } // namespace

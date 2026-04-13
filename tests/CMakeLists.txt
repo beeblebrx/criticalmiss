@@ -3,6 +3,7 @@ add_executable(game_tests
     GameTest.cpp
     EventHandlerTest.cpp
     GameLoopTest.cpp
+    PartyTest.cpp
 )
 
 target_link_libraries(game_tests

@@ -27,6 +27,7 @@ add_library(game STATIC
     src/game/Grid.cpp
     src/game/GameObject.cpp
     src/game/Player.cpp
+    src/game/Party.cpp
     src/game/Enemy.cpp
     src/game/GameLoop.cpp
 )
