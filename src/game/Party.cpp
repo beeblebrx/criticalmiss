@@ -1,15 +1,17 @@
 #include "game/Party.hpp"
+#include <stdexcept>
 
 namespace game {
 
 Party::Party(int id, int gridX, int gridY)
-    : GameObject(id, gridX, gridY, Color{255, 255, 255}, 1),
-      members_{{
-          {PartySlot::FrontLeft,  Color{0, 0, 255}},
-          {PartySlot::FrontRight, Color{255, 0, 0}},
-          {PartySlot::BackLeft,   Color{255, 255, 0}},
-          {PartySlot::BackRight,  Color{0, 255, 0}}
-      }} {}
+    : GameObject(id, gridX, gridY, Color{255, 255, 255}, 1) {}
+
+void Party::addMember(PartyMember member) {
+    PartySlot slot = member.getSlot();
+    if (members_.count(slot))
+        throw std::invalid_argument("Party already has a member in that slot");
+    members_.emplace(slot, std::move(member));
+}
 
 void Party::onTick(Grid& grid, int currentTick) {
     if (bufferedDirection_ == Direction::None || !canMove(currentTick))
@@ -27,7 +29,6 @@ void Party::onTick(Grid& grid, int currentTick) {
     Direction moveDir = bufferedDirection_;
     bool strafe = bufferedStrafe_;
     bufferedDirection_ = Direction::None;
-    // bufferedStrafe_ = false;
 
     int nx = gridX_ + dx, ny = gridY_ + dy;
     if (!grid.isInBounds(nx, ny))
@@ -53,8 +54,34 @@ Direction Party::getFacing() const {
     return facing_;
 }
 
-const std::array<PartyMember, 4>& Party::getMembers() const {
+const std::map<PartySlot, PartyMember>& Party::getMembers() const {
     return members_;
+}
+
+std::vector<const PartyMember*> Party::frontRow() const {
+    return slotsOf(PartySlot::FrontLeft, PartySlot::FrontRight);
+}
+
+std::vector<const PartyMember*> Party::backRow() const {
+    return slotsOf(PartySlot::BackLeft, PartySlot::BackRight);
+}
+
+std::vector<const PartyMember*> Party::leftColumn() const {
+    return slotsOf(PartySlot::FrontLeft, PartySlot::BackLeft);
+}
+
+std::vector<const PartyMember*> Party::rightColumn() const {
+    return slotsOf(PartySlot::FrontRight, PartySlot::BackRight);
+}
+
+std::vector<const PartyMember*> Party::slotsOf(PartySlot a, PartySlot b) const {
+    std::vector<const PartyMember*> result;
+    for (PartySlot s : {a, b}) {
+        auto it = members_.find(s);
+        if (it != members_.end())
+            result.push_back(&it->second);
+    }
+    return result;
 }
 
 } // namespace game

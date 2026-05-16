@@ -106,8 +106,8 @@ void Renderer::drawParty(const game::Party& party, const game::Grid& grid, float
     float quadX[4] = {0.f, halfSize, 0.f, halfSize};
     float quadY[4] = {0.f, 0.f, halfSize, halfSize};
 
-    for (const auto& member : party.getMembers()) {
-        int slotIdx = static_cast<int>(member.getSlot());
+    for (const auto& [slot, member] : party.getMembers()) {
+        int slotIdx = static_cast<int>(slot);
         int quad = slotToQuad[slotIdx];
 
         sf::RectangleShape shape({halfSize, halfSize});

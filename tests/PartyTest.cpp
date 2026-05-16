@@ -1,8 +1,15 @@
 #include <gtest/gtest.h>
 #include "game/Party.hpp"
 #include "game/Grid.hpp"
+#include <stdexcept>
 
 namespace {
+
+game::PartyMember makeMember(game::PartySlot slot) {
+    game::PartyMember m{game::Color{0, 0, 0}, "Test", game::Attributes{}};
+    m.setPartySlot(slot);
+    return m;
+}
 
 class PartyTest : public ::testing::Test {
 protected:
@@ -23,16 +30,70 @@ TEST_F(PartyTest, DefaultFacingIsUp) {
     EXPECT_EQ(party.getFacing(), game::Direction::Up);
 }
 
-TEST_F(PartyTest, HasFourMembers) {
-    EXPECT_EQ(party.getMembers().size(), 4);
+TEST_F(PartyTest, NewPartyHasNoMembers) {
+    EXPECT_TRUE(party.getMembers().empty());
 }
 
-TEST_F(PartyTest, MembersHaveDistinctSlots) {
-    const auto& members = party.getMembers();
-    EXPECT_EQ(members[0].getSlot(), game::PartySlot::FrontLeft);
-    EXPECT_EQ(members[1].getSlot(), game::PartySlot::FrontRight);
-    EXPECT_EQ(members[2].getSlot(), game::PartySlot::BackLeft);
-    EXPECT_EQ(members[3].getSlot(), game::PartySlot::BackRight);
+TEST_F(PartyTest, AddMemberStoresBySlot) {
+    party.addMember(makeMember(game::PartySlot::FrontLeft));
+    EXPECT_EQ(party.getMembers().size(), 1u);
+    EXPECT_NE(party.getMembers().find(game::PartySlot::FrontLeft), party.getMembers().end());
+}
+
+TEST_F(PartyTest, AddAllFourDistinctSlotsSucceeds) {
+    party.addMember(makeMember(game::PartySlot::FrontLeft));
+    party.addMember(makeMember(game::PartySlot::FrontRight));
+    party.addMember(makeMember(game::PartySlot::BackLeft));
+    party.addMember(makeMember(game::PartySlot::BackRight));
+    EXPECT_EQ(party.getMembers().size(), 4u);
+}
+
+TEST_F(PartyTest, AddDuplicateSlotThrows) {
+    party.addMember(makeMember(game::PartySlot::FrontLeft));
+    EXPECT_THROW(party.addMember(makeMember(game::PartySlot::FrontLeft)), std::invalid_argument);
+}
+
+TEST_F(PartyTest, FrontRowReturnsFrontMembers) {
+    party.addMember(makeMember(game::PartySlot::FrontLeft));
+    party.addMember(makeMember(game::PartySlot::FrontRight));
+    party.addMember(makeMember(game::PartySlot::BackLeft));
+    auto row = party.frontRow();
+    ASSERT_EQ(row.size(), 2u);
+    EXPECT_EQ(row[0]->getSlot(), game::PartySlot::FrontLeft);
+    EXPECT_EQ(row[1]->getSlot(), game::PartySlot::FrontRight);
+}
+
+TEST_F(PartyTest, BackRowReturnsBackMembers) {
+    party.addMember(makeMember(game::PartySlot::BackLeft));
+    party.addMember(makeMember(game::PartySlot::BackRight));
+    auto row = party.backRow();
+    ASSERT_EQ(row.size(), 2u);
+    EXPECT_EQ(row[0]->getSlot(), game::PartySlot::BackLeft);
+    EXPECT_EQ(row[1]->getSlot(), game::PartySlot::BackRight);
+}
+
+TEST_F(PartyTest, LeftColumnReturnsLeftMembers) {
+    party.addMember(makeMember(game::PartySlot::FrontLeft));
+    party.addMember(makeMember(game::PartySlot::BackLeft));
+    auto col = party.leftColumn();
+    ASSERT_EQ(col.size(), 2u);
+    EXPECT_EQ(col[0]->getSlot(), game::PartySlot::FrontLeft);
+    EXPECT_EQ(col[1]->getSlot(), game::PartySlot::BackLeft);
+}
+
+TEST_F(PartyTest, RightColumnReturnsRightMembers) {
+    party.addMember(makeMember(game::PartySlot::FrontRight));
+    party.addMember(makeMember(game::PartySlot::BackRight));
+    auto col = party.rightColumn();
+    ASSERT_EQ(col.size(), 2u);
+    EXPECT_EQ(col[0]->getSlot(), game::PartySlot::FrontRight);
+    EXPECT_EQ(col[1]->getSlot(), game::PartySlot::BackRight);
+}
+
+TEST_F(PartyTest, PartialRowReturnsOnlyOccupiedSlots) {
+    party.addMember(makeMember(game::PartySlot::FrontLeft));
+    EXPECT_EQ(party.frontRow().size(), 1u);
+    EXPECT_EQ(party.backRow().size(), 0u);
 }
 
 TEST_F(PartyTest, NormalMoveChangesPositionAndFacing) {
@@ -66,7 +127,7 @@ TEST_F(PartyTest, MovementBlockedByBounds) {
 }
 
 TEST_F(PartyTest, MovementBlockedByOccupiedCell) {
-    grid.place(99, 4, 3); // block the cell to the right
+    grid.place(99, 4, 3);
 
     party.bufferInput(game::Direction::Right, false);
     party.onTick(grid, 0);
