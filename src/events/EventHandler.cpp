@@ -9,6 +9,7 @@ EventHandler::EventHandler(IEventSource& source)
 
 game::GameInput EventHandler::processEvents() {
     game::GameInput input;
+    input.strafe = strafeHeld_;
 
     while (const std::optional<sf::Event> event = source_.pollEvent()) {
         if (event->is<sf::Event::Closed>()) {
@@ -30,11 +31,22 @@ game::GameInput EventHandler::processEvents() {
                 case sf::Keyboard::Key::D: case sf::Keyboard::Key::Right:
                     input.playerDirection = game::Direction::Right;
                     break;
+                case sf::Keyboard::Key::Space:
+                    strafeHeld_ = true;
+                    input.strafe = true;
+                    break;
                 case sf::Keyboard::Key::Escape:
                     input.closeRequested = true;
                     break;
                 default:
                     break;
+            }
+        }
+
+        if (const auto* keyEvent = event->getIf<sf::Event::KeyReleased>()) {
+            if (keyEvent->code == sf::Keyboard::Key::Space) {
+                strafeHeld_ = false;
+                input.strafe = false;
             }
         }
     }

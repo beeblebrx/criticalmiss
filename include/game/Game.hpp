@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Grid.hpp"
-#include "Player.hpp"
+#include "Party.hpp"
 #include "Enemy.hpp"
 #include <memory>
 #include <vector>
@@ -13,7 +13,7 @@ public:
     Game();
     void tick();
 
-    Player& getPlayer();
+    Party& getParty();
     const std::vector<GameObject*>& getAllObjects() const;
     const Grid& getGrid() const;
 
@@ -23,7 +23,7 @@ public:
 
 private:
     Grid grid_;
-    std::unique_ptr<Player> player_;
+    std::unique_ptr<Party> party_;
     std::vector<std::unique_ptr<Enemy>> enemies_;
     std::vector<GameObject*> allObjects_;
 

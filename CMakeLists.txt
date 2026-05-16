@@ -27,8 +27,10 @@ add_library(game STATIC
     src/game/Grid.cpp
     src/game/GameObject.cpp
     src/game/Player.cpp
+    src/game/Party.cpp
     src/game/Enemy.cpp
     src/game/GameLoop.cpp
+    src/game/AttributeRandomizer.cpp
 )
 target_include_directories(game PUBLIC include)
 target_compile_features(game PUBLIC cxx_std_17)

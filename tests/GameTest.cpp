@@ -3,13 +3,13 @@
 
 namespace {
 
-TEST(GameTest, PlayerIsPlacedOnGridAtConstruction) {
+TEST(GameTest, PartyIsPlacedOnGridAtConstruction) {
     game::Game game;
-    const auto& player = game.getPlayer();
-    const auto& grid   = game.getGrid();
+    const auto& party = game.getParty();
+    const auto& grid  = game.getGrid();
 
-    EXPECT_TRUE(grid.isOccupied(player.getGridX(), player.getGridY()));
-    EXPECT_EQ(grid.getOccupant(player.getGridX(), player.getGridY()), player.getId());
+    EXPECT_TRUE(grid.isOccupied(party.getGridX(), party.getGridY()));
+    EXPECT_EQ(grid.getOccupant(party.getGridX(), party.getGridY()), party.getId());
 }
 
 TEST(GameTest, AllObjectsListIsNonEmpty) {

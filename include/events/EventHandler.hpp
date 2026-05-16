@@ -12,6 +12,7 @@ public:
 
 private:
     IEventSource& source_;
+    bool strafeHeld_ = false;
 };
 
 } // namespace events

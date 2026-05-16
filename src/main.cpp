@@ -31,7 +31,7 @@ int main() {
             if (input.closeRequested)
                 window.close();
             if (input.playerDirection != game::Direction::None)
-                game.getPlayer().bufferInput(input.playerDirection);
+                game.getParty().bufferInput(input.playerDirection, input.strafe);
             return window.isOpen();
         },
         .tick = [&]() { game.tick(); },
