@@ -14,7 +14,7 @@ public:
     void tick();
 
     Party& getParty();
-    const std::vector<GameObject*>& getAllObjects() const;
+    std::vector<GameObject*> getAllObjects();
     const Grid& getGrid() const;
 
     static constexpr float TICK_RATE = 3.0f;
@@ -23,9 +23,8 @@ public:
 
 private:
     Grid grid_;
-    std::unique_ptr<Party> party_;
+    Party party_;
     std::vector<std::unique_ptr<Enemy>> enemies_;
-    std::vector<GameObject*> allObjects_;
 
     int currentTick_ = 0;
 };
