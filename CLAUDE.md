@@ -1,22 +1,24 @@
 # CLAUDE.md
 
 This is a role playing game where the player controls a party of up to 4 characters.
-The party moves as one in a dungeon drawn on a 2D grid, fighting enemies and solving puzzles.
+The party moves as one in a dungeon drawn on a 2D grid of rooms and tunnels, fighting enemies and solving puzzles.
 
 ## Architecture
 
 This game uses SFML 3 for window management, 2D graphics, keyboard events and sounds.
 
-This project utilizes object oriented programming. All code in the project must be encapsulated in classes, main.cpp being the only exception.
+This project utilizes object oriented programming. Encapsulate everything in classes, main.cpp being the only exception.
 
-Follow the Clean Architecture principles: focus on creating software that is flexible, maintainable, and testable by separating concerns into distinct layers. 
+Follow the Clean Architecture principles: create software that is flexible, maintainable, and testable by separating concerns into distinct layers. Two layers: inner and outer.
 
-**`game/`** — the core domain layer. Must remain dependency-free: no includes from other directories, or any external library (including SFML). All other layers may depend on `game/`, never the reverse.
+**`game/`** — the core, inner layer. Must remain dependency-free: no includes from other directories, or any external library (including SFML).
 
 **`main.cpp`** — wires everything together. Keep it as short as possible; any non-trivial logic belongs in a namespaced module.
 
+Renderer, event handler and future sound player and game save/load handling are in the outer layer.
+
 ## Tests
 
-The project utilizes Google Test for testing. Tests are in **`tests/`**. After implementing a change update test cases that test the changed class or create new test suites for new classes. Then run tests:  ctest --test-dir build --output-on-failure
+Utilize Google Test for testing. Tests are in **`tests/`**. After implementing a change update test cases that test the changed class or create new test suites for new classes. Then run tests.
 
 If a test fails stop and tell how you plan to fix it and ask if you can continue.
