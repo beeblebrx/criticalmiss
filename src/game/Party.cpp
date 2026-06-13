@@ -1,4 +1,5 @@
 #include "game/Party.hpp"
+#include "game/Level.hpp"
 #include "game/WorldView.hpp"
 #include <stdexcept>
 
@@ -18,7 +19,7 @@ void Party::think(const WorldView& /*view*/) {
     // Player-controlled: the next goal comes from bufferInput().
 }
 
-void Party::move(Grid& grid, int currentTick) {
+void Party::move(Level& level, int currentTick) {
     if (bufferedDirection_ == Direction::None || !canMove(currentTick))
         return;
 
@@ -36,16 +37,16 @@ void Party::move(Grid& grid, int currentTick) {
     bufferedDirection_ = Direction::None;
 
     int nx = gridX_ + dx, ny = gridY_ + dy;
-    if (!grid.isInBounds(nx, ny))
+    if (!level.isPassable(nx, ny))
         return;
 
-    if (grid.isOccupied(nx, ny))
+    if (level.grid().isOccupied(nx, ny))
         return;
 
     if (!strafe)
         facing_ = moveDir;
 
-    moveTo(grid, nx, ny);
+    moveTo(level.grid(), nx, ny);
     lastMoveTick_ = currentTick;
 }
 

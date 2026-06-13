@@ -6,11 +6,12 @@
 namespace game {
 
 struct WorldView;
+class Level;
 
 class Animate : public GameObject {
 public:
     virtual void think(const WorldView& view) = 0;
-    virtual void move(Grid& grid, int currentTick) = 0;
+    virtual void move(Level& level, int currentTick) = 0;
 
     Direction getFacing() const;
     void setFacing(Direction facing);

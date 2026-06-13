@@ -10,7 +10,7 @@ public:
         : Creature(0, 0, 0, game::Color{}, 1, attrs) {}
 
     void think(const game::WorldView&) override {}
-    void move(game::Grid&, int) override {}
+    void move(game::Level&, int) override {}
 };
 
 } // namespace game_test

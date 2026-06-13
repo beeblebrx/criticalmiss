@@ -1,16 +1,24 @@
 #include "game/Game.hpp"
 #include "game/GameLoop.hpp"
+#include "game/World.hpp"
 #include "render/Renderer.hpp"
 #include "events/EventHandler.hpp"
 #include "events/SFMLEventSource.hpp"
+#include "io/LevelLoader.hpp"
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/VideoMode.hpp>
 #include <SFML/System/Clock.hpp>
+#include <utility>
 
 int main() {
     constexpr float cellSize = 48.f;
-    constexpr int gridWidth = 16;
-    constexpr int gridHeight = 12;
+
+    io::LevelLoader loader;
+    game::World world;
+    world.addLevel(loader.load(LEVEL1_PATH));
+
+    const unsigned gridWidth  = static_cast<unsigned>(world.currentLevel().getWidth());
+    const unsigned gridHeight = static_cast<unsigned>(world.currentLevel().getHeight());
 
     sf::RenderWindow window(
         sf::VideoMode({static_cast<unsigned>(gridWidth * cellSize),
@@ -18,7 +26,7 @@ int main() {
         "Critical Miss");
     window.setVerticalSyncEnabled(true);
 
-    game::Game game;
+    game::Game game(std::move(world));
     render::Renderer renderer(window, cellSize);
     events::SFMLEventSource eventSource(window);
     events::EventHandler eventHandler(eventSource);
@@ -36,7 +44,7 @@ int main() {
         },
         .tick = [&]() { game.tick(); },
         .render = [&](float alpha) {
-            renderer.render(game.getAllObjects(), game.getGrid(), alpha);
+            renderer.render(game.getAllObjects(), game.getCurrentLevel(), alpha);
         },
         .getElapsedTime = [&]() { return clock.restart().asSeconds(); }
     });

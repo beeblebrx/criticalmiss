@@ -2,11 +2,11 @@
 
 namespace game {
 
-class Grid;
+class Level;
 class Party;
 
 struct WorldView {
-    const Grid& grid;
+    const Level& level;
     const Party& party;
 };
 

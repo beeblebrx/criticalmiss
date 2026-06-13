@@ -13,7 +13,7 @@ public:
     Party(int id, int gridX, int gridY);
 
     void think(const WorldView& view) override;
-    void move(Grid& grid, int currentTick) override;
+    void move(Level& level, int currentTick) override;
 
     void bufferInput(Direction dir, bool strafe);
     void addMember(PartyMember member);

@@ -33,6 +33,9 @@ add_library(game STATIC
     src/game/Trap.cpp
     src/game/HealthPotion.cpp
     src/game/SpikeTrap.cpp
+    src/game/Level.cpp
+    src/game/World.cpp
+    src/game/LevelParser.cpp
     src/game/Party.cpp
     src/game/Enemy.cpp
     src/game/GameLoop.cpp
@@ -40,6 +43,12 @@ add_library(game STATIC
 )
 target_include_directories(game PUBLIC include)
 target_compile_features(game PUBLIC cxx_std_17)
+
+add_library(io STATIC
+    src/io/LevelLoader.cpp
+)
+target_link_libraries(io PUBLIC game)
+target_compile_features(io PUBLIC cxx_std_17)
 
 add_library(render STATIC
     src/render/Renderer.cpp
@@ -53,7 +62,9 @@ add_library(events STATIC
 target_link_libraries(events PUBLIC game SFML::Graphics)
 
 add_executable(criticalmiss src/main.cpp)
-target_link_libraries(criticalmiss PRIVATE render events)
+target_link_libraries(criticalmiss PRIVATE render events io)
+target_compile_definitions(criticalmiss
+    PRIVATE LEVEL1_PATH="${CMAKE_SOURCE_DIR}/assets/levels/level1.lvl")
 
 enable_testing()
 add_subdirectory(tests)

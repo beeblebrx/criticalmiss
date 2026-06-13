@@ -1,4 +1,5 @@
 #include "game/Enemy.hpp"
+#include "game/Level.hpp"
 #include "game/Party.hpp"
 #include "game/WorldView.hpp"
 #include <cstdlib>
@@ -13,7 +14,7 @@ void Enemy::think(const WorldView& view) {
     targetY_ = view.party.getGridY();
 }
 
-void Enemy::move(Grid& grid, int currentTick) {
+void Enemy::move(Level& level, int currentTick) {
     if (!canMove(currentTick))
         return;
 
@@ -37,13 +38,13 @@ void Enemy::move(Grid& grid, int currentTick) {
 
     for (int i = 0; i < count; i++) {
         int nx = attempts[i].x, ny = attempts[i].y;
-        if (grid.isInBounds(nx, ny) && !grid.isOccupied(nx, ny)) {
+        if (level.isPassable(nx, ny) && !level.grid().isOccupied(nx, ny)) {
             if (nx > gridX_)      facing_ = Direction::Right;
             else if (nx < gridX_) facing_ = Direction::Left;
             else if (ny > gridY_) facing_ = Direction::Down;
             else if (ny < gridY_) facing_ = Direction::Up;
 
-            moveTo(grid, nx, ny);
+            moveTo(level.grid(), nx, ny);
             lastMoveTick_ = currentTick;
             return;
         }

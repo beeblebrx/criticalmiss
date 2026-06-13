@@ -10,33 +10,46 @@ Renderer::Renderer(sf::RenderWindow& window, float cellSize)
     : window_(window), cellSize_(cellSize) {}
 
 void Renderer::render(const std::vector<game::GameObject*>& objects,
-                      const game::Grid& grid, float alpha) {
+                      const game::Level& level, float alpha) {
     window_.clear(sf::Color(30, 30, 30));
-    drawGrid(grid);
+    drawTiles(level);
+    drawGridLines(level);
 
     for (auto* obj : objects) {
         if (auto* party = dynamic_cast<const game::Party*>(obj))
-            drawParty(*party, grid, alpha);
+            drawParty(*party, alpha);
         else
-            drawObject(*obj, grid, alpha);
+            drawObject(*obj, alpha);
     }
 
     window_.display();
 }
 
-void Renderer::drawGrid(const game::Grid& grid) {
-    float w = grid.getWidth() * cellSize_;
-    float h = grid.getHeight() * cellSize_;
+void Renderer::drawTiles(const game::Level& level) {
+    for (int y = 0; y < level.getHeight(); y++) {
+        for (int x = 0; x < level.getWidth(); x++) {
+            const game::Tile& tile = level.tileAt(x, y);
+            sf::RectangleShape cell({cellSize_, cellSize_});
+            cell.setPosition({x * cellSize_, y * cellSize_});
+            cell.setFillColor(toSfColor(tile.color));
+            window_.draw(cell);
+        }
+    }
+}
+
+void Renderer::drawGridLines(const game::Level& level) {
+    float w = level.getWidth() * cellSize_;
+    float h = level.getHeight() * cellSize_;
     sf::Color lineColor(60, 60, 60);
 
-    for (int x = 0; x <= grid.getWidth(); x++) {
+    for (int x = 0; x <= level.getWidth(); x++) {
         sf::RectangleShape line({1.f, h});
         line.setPosition({x * cellSize_, 0.f});
         line.setFillColor(lineColor);
         window_.draw(line);
     }
 
-    for (int y = 0; y <= grid.getHeight(); y++) {
+    for (int y = 0; y <= level.getHeight(); y++) {
         sf::RectangleShape line({w, 1.f});
         line.setPosition({0.f, y * cellSize_});
         line.setFillColor(lineColor);
@@ -44,7 +57,7 @@ void Renderer::drawGrid(const game::Grid& grid) {
     }
 }
 
-void Renderer::drawObject(const game::GameObject& obj, const game::Grid& grid, float alpha) {
+void Renderer::drawObject(const game::GameObject& obj, float alpha) {
     sf::Vector2f prev = cellToPixel(obj.getPrevGridX(), obj.getPrevGridY());
     sf::Vector2f curr = cellToPixel(obj.getGridX(), obj.getGridY());
     sf::Vector2f pos = prev + alpha * (curr - prev);
@@ -56,7 +69,7 @@ void Renderer::drawObject(const game::GameObject& obj, const game::Grid& grid, f
     window_.draw(shape);
 }
 
-void Renderer::drawParty(const game::Party& party, const game::Grid& grid, float alpha) {
+void Renderer::drawParty(const game::Party& party, float alpha) {
     sf::Vector2f prev = cellToPixel(party.getPrevGridX(), party.getPrevGridY());
     sf::Vector2f curr = cellToPixel(party.getGridX(), party.getGridY());
     sf::Vector2f pos = prev + alpha * (curr - prev);

@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include "game/Party.hpp"
-#include "game/Grid.hpp"
+#include "game/Level.hpp"
+#include "game/Tile.hpp"
 #include <stdexcept>
 
 namespace {
@@ -13,11 +14,11 @@ game::PartyMember makeMember(game::PartySlot slot) {
 
 class PartyTest : public ::testing::Test {
 protected:
-    game::Grid grid{16, 12};
+    game::Level level{16, 12};
     game::Party party{0, 3, 3};
 
     void SetUp() override {
-        grid.place(party.getId(), party.getGridX(), party.getGridY());
+        level.grid().place(party.getId(), party.getGridX(), party.getGridY());
     }
 };
 
@@ -98,7 +99,7 @@ TEST_F(PartyTest, PartialRowReturnsOnlyOccupiedSlots) {
 
 TEST_F(PartyTest, NormalMoveChangesPositionAndFacing) {
     party.bufferInput(game::Direction::Right, false);
-    party.move(grid, 0);
+    party.move(level, 0);
 
     EXPECT_EQ(party.getGridX(), 4);
     EXPECT_EQ(party.getGridY(), 3);
@@ -107,7 +108,7 @@ TEST_F(PartyTest, NormalMoveChangesPositionAndFacing) {
 
 TEST_F(PartyTest, StrafeMoveChangesPositionButNotFacing) {
     party.bufferInput(game::Direction::Right, true);
-    party.move(grid, 0);
+    party.move(level, 0);
 
     EXPECT_EQ(party.getGridX(), 4);
     EXPECT_EQ(party.getGridY(), 3);
@@ -115,38 +116,57 @@ TEST_F(PartyTest, StrafeMoveChangesPositionButNotFacing) {
 }
 
 TEST_F(PartyTest, MovementBlockedByBounds) {
-    game::Grid smallGrid(4, 4);
+    game::Level smallLevel(4, 4);
     game::Party edgeParty(10, 0, 0);
-    smallGrid.place(edgeParty.getId(), 0, 0);
+    smallLevel.grid().place(edgeParty.getId(), 0, 0);
 
     edgeParty.bufferInput(game::Direction::Left, false);
-    edgeParty.move(smallGrid, 0);
+    edgeParty.move(smallLevel, 0);
 
     EXPECT_EQ(edgeParty.getGridX(), 0);
     EXPECT_EQ(edgeParty.getGridY(), 0);
 }
 
-TEST_F(PartyTest, MovementBlockedByOccupiedCell) {
-    grid.place(99, 4, 3);
+TEST_F(PartyTest, MovementBlockedByWall) {
+    level.setTile(4, 3, game::makeTile(game::TileType::RockWall));
 
     party.bufferInput(game::Direction::Right, false);
-    party.move(grid, 0);
+    party.move(level, 0);
+
+    EXPECT_EQ(party.getGridX(), 3);
+    EXPECT_EQ(party.getGridY(), 3);
+}
+
+TEST_F(PartyTest, FacingNotChangedWhenBlockedByWall) {
+    level.setTile(4, 3, game::makeTile(game::TileType::RockWall));
+
+    party.bufferInput(game::Direction::Right, false);
+    party.move(level, 0);
+
+    EXPECT_EQ(party.getFacing(), game::Direction::Up);
+}
+
+TEST_F(PartyTest, MovementBlockedByOccupiedCell) {
+    level.grid().place(99, 4, 3);
+
+    party.bufferInput(game::Direction::Right, false);
+    party.move(level, 0);
 
     EXPECT_EQ(party.getGridX(), 3);
     EXPECT_EQ(party.getGridY(), 3);
 }
 
 TEST_F(PartyTest, FacingNotChangedWhenMovementBlocked) {
-    grid.place(99, 4, 3);
+    level.grid().place(99, 4, 3);
 
     party.bufferInput(game::Direction::Right, false);
-    party.move(grid, 0);
+    party.move(level, 0);
 
     EXPECT_EQ(party.getFacing(), game::Direction::Up);
 }
 
 TEST_F(PartyTest, NoInputNoMovement) {
-    party.move(grid, 0);
+    party.move(level, 0);
 
     EXPECT_EQ(party.getGridX(), 3);
     EXPECT_EQ(party.getGridY(), 3);
@@ -154,21 +174,21 @@ TEST_F(PartyTest, NoInputNoMovement) {
 
 TEST_F(PartyTest, SequentialMovesUpdateFacing) {
     party.bufferInput(game::Direction::Down, false);
-    party.move(grid, 0);
+    party.move(level, 0);
     EXPECT_EQ(party.getFacing(), game::Direction::Down);
 
     party.bufferInput(game::Direction::Left, false);
-    party.move(grid, 1);
+    party.move(level, 1);
     EXPECT_EQ(party.getFacing(), game::Direction::Left);
 }
 
 TEST_F(PartyTest, StrafeAfterFacingChangePreservesFacing) {
     party.bufferInput(game::Direction::Right, false);
-    party.move(grid, 0);
+    party.move(level, 0);
     EXPECT_EQ(party.getFacing(), game::Direction::Right);
 
     party.bufferInput(game::Direction::Down, true);
-    party.move(grid, 1);
+    party.move(level, 1);
     EXPECT_EQ(party.getFacing(), game::Direction::Right);
     EXPECT_EQ(party.getGridY(), 4);
 }
