@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GameObject.hpp"
+#include "Creature.hpp"
 #include "PartyMember.hpp"
 #include "Types.hpp"
 #include <map>
@@ -8,17 +8,16 @@
 
 namespace game {
 
-class Party : public GameObject {
+class Party : public Creature {
 public:
     Party(int id, int gridX, int gridY);
 
-    void onTick(Grid& grid, int currentTick) override;
-    void onCollision(GameObject& other) override;
+    void think(const WorldView& view) override;
+    void move(Grid& grid, int currentTick) override;
 
     void bufferInput(Direction dir, bool strafe);
     void addMember(PartyMember member);
 
-    Direction getFacing() const;
     const std::map<PartySlot, PartyMember>& getMembers() const;
 
     std::vector<const PartyMember*> frontRow() const;
@@ -30,7 +29,6 @@ private:
     std::vector<const PartyMember*> slotsOf(PartySlot a, PartySlot b) const;
 
     std::map<PartySlot, PartyMember> members_;
-    Direction facing_ = Direction::Up;
     Direction bufferedDirection_ = Direction::None;
     bool bufferedStrafe_ = false;
 };

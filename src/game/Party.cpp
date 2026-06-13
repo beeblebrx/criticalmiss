@@ -1,10 +1,11 @@
 #include "game/Party.hpp"
+#include "game/WorldView.hpp"
 #include <stdexcept>
 
 namespace game {
 
 Party::Party(int id, int gridX, int gridY)
-    : GameObject(id, gridX, gridY, Color{255, 255, 255}, 1) {}
+    : Creature(id, gridX, gridY, Color{255, 255, 255}, 1, Attributes{}) {}
 
 void Party::addMember(PartyMember member) {
     PartySlot slot = member.getSlot();
@@ -13,7 +14,11 @@ void Party::addMember(PartyMember member) {
     members_.emplace(slot, std::move(member));
 }
 
-void Party::onTick(Grid& grid, int currentTick) {
+void Party::think(const WorldView& /*view*/) {
+    // Player-controlled: the next goal comes from bufferInput().
+}
+
+void Party::move(Grid& grid, int currentTick) {
     if (bufferedDirection_ == Direction::None || !canMove(currentTick))
         return;
 
@@ -40,18 +45,13 @@ void Party::onTick(Grid& grid, int currentTick) {
     if (!strafe)
         facing_ = moveDir;
 
-    moveTo(grid, nx, ny, currentTick);
+    moveTo(grid, nx, ny);
+    lastMoveTick_ = currentTick;
 }
-
-void Party::onCollision(GameObject& /*other*/) {}
 
 void Party::bufferInput(Direction dir, bool strafe) {
     bufferedDirection_ = dir;
     bufferedStrafe_ = strafe;
-}
-
-Direction Party::getFacing() const {
-    return facing_;
 }
 
 const std::map<PartySlot, PartyMember>& Party::getMembers() const {

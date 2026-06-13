@@ -5,6 +5,9 @@ add_executable(game_tests
     GameLoopTest.cpp
     PartyTest.cpp
     PartyMemberTest.cpp
+    CreatureTest.cpp
+    ItemTest.cpp
+    TrapTest.cpp
     AttributeRandomizerTest.cpp
 )
 

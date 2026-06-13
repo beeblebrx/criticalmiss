@@ -1,13 +1,19 @@
 #include "game/Enemy.hpp"
+#include "game/Party.hpp"
+#include "game/WorldView.hpp"
 #include <cstdlib>
-#include <cstdio>
 
 namespace game {
 
 Enemy::Enemy(int id, int gridX, int gridY, int moveInterval)
-    : GameObject(id, gridX, gridY, Color{255, 0, 0}, moveInterval) {}
+    : Creature(id, gridX, gridY, Color{255, 0, 0}, moveInterval, Attributes{10, 0, 5, 5, 5}) {}
 
-void Enemy::onTick(Grid& grid, int currentTick) {
+void Enemy::think(const WorldView& view) {
+    targetX_ = view.party.getGridX();
+    targetY_ = view.party.getGridY();
+}
+
+void Enemy::move(Grid& grid, int currentTick) {
     if (!canMove(currentTick))
         return;
 
@@ -32,19 +38,16 @@ void Enemy::onTick(Grid& grid, int currentTick) {
     for (int i = 0; i < count; i++) {
         int nx = attempts[i].x, ny = attempts[i].y;
         if (grid.isInBounds(nx, ny) && !grid.isOccupied(nx, ny)) {
-            moveTo(grid, nx, ny, currentTick);
+            if (nx > gridX_)      facing_ = Direction::Right;
+            else if (nx < gridX_) facing_ = Direction::Left;
+            else if (ny > gridY_) facing_ = Direction::Down;
+            else if (ny < gridY_) facing_ = Direction::Up;
+
+            moveTo(grid, nx, ny);
+            lastMoveTick_ = currentTick;
             return;
         }
     }
-}
-
-void Enemy::onCollision(GameObject& /*other*/) {
-    std::printf("Enemy collided!\n");
-}
-
-void Enemy::setTarget(int targetX, int targetY) {
-    targetX_ = targetX;
-    targetY_ = targetY;
 }
 
 } // namespace game

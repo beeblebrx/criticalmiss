@@ -1,5 +1,6 @@
 #include "game/Game.hpp"
 #include "game/AttributeRandomizer.hpp"
+#include "game/WorldView.hpp"
 
 namespace game {
 
@@ -31,12 +32,14 @@ void Game::tick() {
     for (auto& e : enemies_)
         e->snapshotPosition();
 
+    WorldView view{grid_, party_};
+    party_.think(view);
     for (auto& e : enemies_)
-        e->setTarget(party_.getGridX(), party_.getGridY());
+        e->think(view);
 
-    party_.onTick(grid_, currentTick_);
+    party_.move(grid_, currentTick_);
     for (auto& e : enemies_)
-        e->onTick(grid_, currentTick_);
+        e->move(grid_, currentTick_);
 
     currentTick_++;
 }

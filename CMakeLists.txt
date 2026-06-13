@@ -26,6 +26,13 @@ add_library(game STATIC
     src/game/Game.cpp
     src/game/Grid.cpp
     src/game/GameObject.cpp
+    src/game/Animate.cpp
+    src/game/Creature.cpp
+    src/game/Inanimate.cpp
+    src/game/Item.cpp
+    src/game/Trap.cpp
+    src/game/HealthPotion.cpp
+    src/game/SpikeTrap.cpp
     src/game/Party.cpp
     src/game/Enemy.cpp
     src/game/GameLoop.cpp
